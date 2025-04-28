@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get('/test', (req, res) => {
-  res.send('The server is alive');
+  res.json('The server is alive');
 })
 
 app.listen(port, () => {

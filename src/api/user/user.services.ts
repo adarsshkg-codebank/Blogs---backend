@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt"
 import { db } from "../../utils/db"
-import { User } from "@prisma/client"
 
 type RegisterUser = {
   email: string,

@@ -1,4 +1,3 @@
-
 {
   "compilerOptions": {
     "target": "es6",
@@ -12,7 +11,7 @@
   },
   "files":[
     "global.d.ts",
-  ]
+  ],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
