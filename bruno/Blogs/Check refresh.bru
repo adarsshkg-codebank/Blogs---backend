@@ -1,0 +1,15 @@
+meta {
+  name: Check refresh
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/auth/refresh
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDU5NzcyOTAsImV4cCI6MTc0NTk3NzU5MH0.vSatQZNVTWg9TmqHz1aJuiIbSzmbvFvY2hGmcxK-Ins
+}

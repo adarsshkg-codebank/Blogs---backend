@@ -1,0 +1,25 @@
+meta {
+  name: Create Blog post
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/user/posts
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NDU5NzcyOTAsImV4cCI6MTc0NTk3NzU5MH0.vSatQZNVTWg9TmqHz1aJuiIbSzmbvFvY2hGmcxK-Ins
+}
+
+body:json {
+  {
+    "email":"test@example.com",
+    "title": "My First Blog Post",
+    "desc": "A brief description of my exciting blog post.",
+    "content": "The full content of my very interesting blog post goes here...",
+    "categories": ["Technology", "Web Development"]
+  }
+}

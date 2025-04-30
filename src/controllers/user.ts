@@ -4,7 +4,7 @@ import { string, z } from 'zod';
 import { authenticateToken } from '../middleware/validateToken';
 
 const blogSchema = z.object({
-  userId: string(),
+  email: string(),
   title: z.string(),
   desc: z.string(),
   content: z.string(),
@@ -31,10 +31,10 @@ export const createPost = async (req: Request, res: Response) => {
       return
     }
 
-    const { userId, title, desc, content, categories = [] } = result.data as createBlogInput;
+    const { email, title, desc, content, categories = [] } = result.data as createBlogInput;
     const createBlog = await db.blog.create({
       data: {
-        userId,
+        email,
         title,
         desc,
         content,
@@ -64,7 +64,7 @@ export const editBlog = async (req: Request, res: Response) => {
     const updateBlog = await db.blog.update({
       where: {
         id: ID,
-        userId: req.user?.id,
+        email: req.user?.email,
       },
       data: {
         title: update.title,
@@ -82,7 +82,7 @@ export const editBlog = async (req: Request, res: Response) => {
 export const deletePost = async (req: Request, res: Response) => {
   try {
     const ID = req.params.id;
-    const userID = req.user?.id;
+    const email = req.user?.email;
 
     const exist = await db.blog.findUnique({
       where: {
@@ -94,14 +94,14 @@ export const deletePost = async (req: Request, res: Response) => {
       return
     }
 
-    if (exist.userId !== userID) {
+    if (exist.email !== email) {
       res.status(403).json({ message: "Not the Author" });
     }
 
     await db.blog.delete({
       where: {
         id: ID,
-        userId: userID,
+        email: email,
       }
     });
     res.status(200).json({ message: "Blog has been deleted" });
@@ -111,9 +111,9 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 }
 
-const router: Router = express.Router();
-router.post('/posts', authenticateToken, createPost);
-router.patch('/posts/:id', authenticateToken, createPost);
-router.delete('/posts/:id', authenticateToken, deletePost);
+const Userrouter: Router = express.Router();
+Userrouter.post('/posts', authenticateToken, createPost);
+Userrouter.patch('/posts/:id', authenticateToken, createPost);
+Userrouter.delete('/posts/:id', authenticateToken, deletePost);
 
-export default router;
+export { Userrouter };

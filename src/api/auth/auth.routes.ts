@@ -6,17 +6,20 @@ import { findUserById, findUserByEmail, createUserByEmailAndPassword } from "../
 import { z } from "zod";
 import { generateAccessToken } from "../../utils/jwt";
 import { authenticateToken } from "../../middleware/validateToken";
+import { hashToken } from "../../utils/hasktoken";
+import { db } from "../../utils/db";
 
-const router = express.Router();
+const authrouter = express.Router();
 
 const UserData = z.object({
   email: z.string(),
   password: z.string().min(8),
 });
 
-router.post("/register", async (req: Request, res: Response) => {
+authrouter.post("/register", async (req: Request, res: Response) => {
   try {
     const result = UserData.safeParse(req.body);
+    console.log(result);
 
     if (!result.success) {
       res.status(400).json({ message: "Validation errors" });
@@ -45,7 +48,7 @@ router.post("/register", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/login", async (req: Request, res: Response) => {
+authrouter.post("/login", async (req: Request, res: Response) => {
   const result = UserData.safeParse(req.body);
   if (!result.success) {
     res.status(400).json({ message: "Invalid email or password" });
@@ -55,9 +58,14 @@ router.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = result.data;
 
-    const existing = await findUserByEmail(email);
+    const existing = await db.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    console.log(existing);
     if (!existing) {
-      res.status(400).json({ message: "Email already not in use" });
+      res.status(400).json({ message: "Email not found" });
       return
     }
 
@@ -68,9 +76,17 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const { accessToken, refreshToken } = generateTokens(existing);
-    await addRefresh({ refreshToken, id: existing.id });
+    await db.user.update({
+      where: {
+        id: existing.id,
+      },
+      data: {
+        hashedToken: hashToken(refreshToken),
+      }
+    })
 
     res.status(200).json({
+      message: "Login succedssful",
       accessToken,
       refreshToken
     });
@@ -79,7 +95,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 })
 
-router.post("/refresh", authenticateToken, async (req: Request, res: Response) => {
+authrouter.post("/refresh", authenticateToken, async (req: Request, res: Response) => {
   try {
     const userData = req.user as { id: string, email: string };
 
@@ -94,4 +110,5 @@ router.post("/refresh", authenticateToken, async (req: Request, res: Response) =
 })
 
 
-export { Router }
+export { authrouter }
+

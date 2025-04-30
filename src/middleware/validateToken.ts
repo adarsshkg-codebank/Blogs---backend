@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,7 +18,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
         return
       }
 
-      req.user = user;
+      req.user = req.user = user as { id: string; email: string } & JwtPayload;;
       next();
     });
   } catch (err) {
